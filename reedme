@@ -1,0 +1,132 @@
+create MySql database flaskproject
+create venv
+pip install flask
+create module app
+create module config
+create module main
+create module view
+create package templates
+create base.html
+create index.html
+create package static\styles
+create flask_styles.css
+create package for blueprints 'Projects'
+create package for blueprints projects\templates    (app\projects\templates)
+create index.html                                   (app\projects\templates\index.html)
+create module projects                              (app\projects\projects)
+pip install flask-sqlalchemy mysql-connector
+create module models                                (app\models)
+pip install flask-admin
+pip install flask-security
+pip install flask-migrate
+pip uninstall flask-connector
+pip install flask-connector-python
+pip install email_validator
+pip install Flask-WTF
+create module forms                                 (app\projects\forms)
+
+
+
+Models!!!
+
+    User:
+        id
+        name
+        surname
+        birthday
+        position
+        email
+        password
+        active
+        avatar
+        slug
+        roles
+        executor_projects
+        manager_projects
+        manager_tasks
+        comments
+        executor_tasks
+        links:
+            - Role (roles, many to many) !!                          ---
+            - Project (manager_projects, one to many) !!
+            - Project (executor_projects, many to many) ++
+            - Task (manager_tasks, one to many) !!
+            - Task (executor_tasks, many to many) ++
+            - Comment (author, one to many) !!
+
+    Role:
+        id
+        name
+        description
+        user
+        links:
+            User (, many-to-many) ++
+
+    Project:
+        id
+        title
+        describe
+        slug
+        create
+        tasks
+        manager
+        manager_id
+        executors
+
+        links:
+            - Task (task, one to many) !!
+            - User (manager, many to one) ++
+            - User (manager_id, many to one) !!
+            - User (executors, many to many) !!  ---
+
+    Task:
+        id
+        title
+        describe
+        date_begin
+        date_end
+        task_type
+        priority
+        num_of_hours
+        slug
+        project
+        project_id
+        journal
+        manager
+        manager_id
+        executors
+
+        links:
+            - Project (project, many to one) ++
+            - Project (project_id, many to one) !!
+            - Journal (journal, one to one) !!
+            - User (manager, many to one) ++
+            - User (manager_id, many to one) !!
+            - User (executors, many to many) !!  ---
+
+    Journal:
+        id
+        time_spent
+        task
+        task_id
+        comments
+
+        links:
+            - Task (task, one to one) ++
+            - Task (task_id, one to one) !!
+            - Comment (comments, one to many) !!
+
+    Comment:
+        id
+        body
+        author
+        author_id
+        journal
+        journal_id
+
+        links:
+            - User (author, many to one) ++
+            - User (author_id, many to many) !!
+            - Journal (journal, many to one) ++
+            - Journal (journal_id, many to one) !!
+

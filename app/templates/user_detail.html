@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Users
+{% endblock%}
+
+
+{% block search %}
+                <form class="navbar-form navbar-left" method="GET">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q"
+                               value="{{ request.args.get('q', '' )}}">
+                    </div>
+                    <button type="submit" class="btn btn-search">Search</button>
+                </form>
+{% endblock %}
+
+
+{% block linc_navbar %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('create_user') }}">+ New user</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    User:
+{% endblock %}
+
+{% block content %}
+
+<label class="control-label col-md-8">Name:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.name }}</div>
+<label class="control-label col-md-8">Surname:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.surname }}</div>
+<label class="control-label col-md-8">Birthday:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.birthday.strftime('%d %B %Y')}}</div>
+<label class="control-label col-md-8">Position:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.position }}</div>
+<label class="control-label col-md-8">User email:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.email }}</div>
+<label class="control-label col-md-8">Password:</label>
+    <div class="inline-block col-md-8 col-md-offset-2">{{ user.password }}</div>
+<label class="control-label col-md-8">Status:</label>
+    {% if user.active %}
+        <div class="inline-block col-md-8 col-md-offset-2 bluetext">Active</div>
+    {% else %}
+        <div class="inline-block col-md-8 col-md-offset-2 redtext">Deactivated</div>
+    {% endif %}
+<label class="control-label col-md-8">Role(s):</label>
+    {% for role in user.roles %}
+        <div class="inline-block col-md-8 col-md-offset-2">{{ role }}</div>
+    {% endfor %}
+</br>
+<div class="col-md-8 col-md-offset-1">
+        <a href="{{ url_for('edit_user', slug=user.slug) }}" class="btn btn-primary" role="button">
+            Edit user</a>
+        <a href="{{ url_for('delete_user', slug=user.slug) }}" class="btn btn-danger" role="button">
+            Delete user</a>
+    </div>
+
+{% endblock %}

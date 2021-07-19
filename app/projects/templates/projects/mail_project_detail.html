@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New project created</title>
+</head>
+<body>
+    <H2>Was created new project to with you are related: </H2>
+    <div>
+    <h3>Title:</h3>
+        <ul>
+            <p>{{ project.title }}</p>
+        </ul>
+    </div>
+    <div>
+    <h3>Describe:</h3>
+        <ul>
+            <p>{{ project.describe|safe }}</p>
+        </ul>
+    </div>
+    <div>
+    <H3>Create at:</h3>
+        <ul>
+            <p>{{ project.create.strftime('%d %B %Y') }}</p>
+        </ul>
+    </div>
+    <div>
+        <H3>Manager:</H3>
+        <ul>
+            <p>{{ project.manager }}<p>
+        </ul>
+    </div>
+    <div>
+    <H3>Executor(s):</H3>
+        {% for executor in project.executors %}
+        <ul>
+            <li>{{ executor }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+
+    <H3>Task(s):</H3>
+        {% for task in project.tasks %}
+            <ul>
+                <li>{{ task.title }} | delivery date: {{ task.date_end.strftime('%d %B %Y') }} | status: {{ task.status }}</li>
+            </ul>
+        {% endfor %}
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New project created</title>
+</head>
+<body>
+    <H2>{{manager.name}} {{ manager.surname }}  edited the project you are related to: </H2>
+    {% if project_old.title != project_new.title %}
+    <div>
+    <h3>Title:</h3>
+        <ul>
+            <p>{{ project_new.title }}</p>
+        </ul>
+    </div>
+    {% endif %}
+    {% if project_old.describe != project_new.describe %}
+    <div>
+    <h3>Describe:</h3>
+        <ul>
+            <p>{{ project_new.describe|safe }}</p>
+        </ul>
+    </div>
+    {% if project_old.create != project_new.create %}
+    <div>
+    <H3>Create at:</h3>
+        <ul>
+            <p>{{ project_new.create.strftime('%d %B %Y') }}</p>
+        </ul>
+    </div>
+    {% endif %}
+    {% if project_old.manager != project_new.manager%}
+    <div>
+        <H3>Manager:</H3>
+        <ul>
+            <p>{{ project_new.manager }}<p>
+        </ul>
+    </div>
+    {% endif %}
+    {% if project_old.executors != project_new.executors %}
+    <div>
+    <H3>Executor(s):</H3>
+        {% for executor in project.executors %}
+        <ul>
+            <li>{{ executor }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% if project_old.tasks != project_new.tasks %}
+    <div>
+    <H3>Task(s):</H3>
+        {% for task in project.tasks %}
+            <ul>
+                <li>{{ task.title }} | delivery date: {{ task.date_end.strftime('%d %B %Y') }} | status: {{ task.status }}</li>
+            </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+</body>
+</html>

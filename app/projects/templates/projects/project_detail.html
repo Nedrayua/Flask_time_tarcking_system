@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Projects | Project detail
+{% endblock%}
+
+
+{% block linc_navbar %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('projects.project_create') }}">+ New project</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    Project:
+{% endblock %}
+
+{% block content %}
+<label class="control-label col-md-8">Title:</label>
+<div class="inline-block col-md-8 col-md-offset-1">{{ project.title }}</div>
+<label class="control-label col-md-8">Describe:</label>
+<div class="inline-block col-md-8 col-md-offset-1"><html>{{ project.describe|safe }}</html></div>
+<label class="control-label col-md-8">Create at:</label>
+<div class="inline-block col-md-8 col-md-offset-1">{{ project.create.strftime('%d %B %Y') }}</div>
+<label class="control-label col-md-8">Manager:</label>
+<div class="inline-block col-md-8 col-md-offset-1">{{ project.manager }}</div>
+<label class="control-label col-md-8">Executor(s):</label>
+<div class="inline-block col-md-8 col-md-offset-1">
+    {% for executor in project.executors %}
+        <p><span class="bluetext">{{ executor }}</span></p>
+    {% endfor %}
+</div>
+<label class="control-label col-md-8">Task(s):</label>
+<div class="inline-block col-md-8 col-md-offset-1">
+    {% for task in project.tasks %}
+        <p><span class="bluetext col-md-8">
+            {{ task.title }} | delivery date: {{ task.date_end.strftime('%d %B %Y') }} | status: {{ task.status }}
+        </span></p>
+        <a href="{{ url_for('projects.task_detail', slug=task.slug) }}" class="blacktext">
+            <i class="glyphicon glyphicon-search" aria-hidden="true"></i></a>
+        <a href="{{ url_for('projects.task_edit', slug=task.slug) }}" class="blacktext">
+            <i class="glyphicon glyphicon-pencil" aria-hidden="true"></i></a>
+    {% endfor %}
+</div>
+<div class="col-md-8">
+    <br>
+    <br>
+</div>
+    <div class="col-md-8 col-md-offset-1 pass_string">
+        <a href="{{ url_for('projects.task_create', slug=project.slug) }}" class="btn btn-primary" role="button">
+            Create new task</a>
+        <a href="{{ url_for('projects.project_edit', slug=project.slug) }}" class="btn btn-primary" role="button">
+            Edit project</a>
+        <a href="{{ url_for('projects.project_delete', slug=project.slug) }}" class="btn btn-danger" role="button">
+            Delete project</a>
+    </div>
+{% endblock %}

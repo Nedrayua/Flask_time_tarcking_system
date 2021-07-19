@@ -1,0 +1,99 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Users
+{% endblock%}
+
+
+{% block search %}
+                <form class="navbar-form navbar-left" method="GET">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Search" name="q"
+                               value="{{ request.args.get('q', '' )}}">
+                    </div>
+                    <button type="submit" class="btn btn-search">Search</button>
+                </form>
+{% endblock %}
+
+
+{% block linc_navbar %}
+
+
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('create_user') }}">+ New user</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    Users:
+{% endblock %}
+
+{% block content %}
+    {% if pages %}
+        <ul class="beads">
+        {% for user in pages.items %}
+            <li>
+                {{ user.position }}: {{ user.name }} {{ user.surname }}
+                <a href="{{ url_for('user_detail', slug=user.slug) }}" class="bluetext">"
+                    <i class="glyphicon glyphicon-search" aria-hidden="true"></i>"</a>
+                <a href="{{ url_for('edit_user', slug=user.slug) }}" class="bluetext">"
+                    <i class="glyphicon glyphicon-pencil" aria-hidden="true"></i>"</a>
+            </li>
+        {% endfor %}
+        </ul>
+    {% endif %}
+
+    <nav>
+        <ul class="pagination">
+            <li {% if not pages.has_prev %} class="disabled" {% endif %} >
+                <a href="./users?page={{ pages.prev_num }}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+            {% for page in pages.iter_pages() %}
+                <li {% if page == pages.page %} class="active" {% endif %}
+                {% if page == None %} class="disabled" {% endif %}>
+                    {% if page %}
+                        <a href="./users?page={{ page }}">{{ page }}<span class="sr-only">(current)</span></a>
+                    {% else %}
+                        <a href="">...<span class="sr-only">(current)</span></a>
+                    {% endif %}
+                </li>
+            {% endfor %}
+            <li
+                    {% if not pages.has_next %} class="disabled" {% endif %}
+            >
+                <a href="./users?page={{ pages.next_num }}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+{% endblock %}

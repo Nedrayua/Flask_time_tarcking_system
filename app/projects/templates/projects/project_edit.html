@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Edit user | Main
+{% endblock%}
+
+{% block linc_navbar %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('projects.project_create') }}">+ New project</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    Project edit:
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-8">
+        <form action="{{ url_for('projects.project_edit', slug=project.slug) }}" method="POST">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.name not in ['csrf_token', 'submit'] -%}
+                <p>{{ field.label() }}:</p>
+                {% if field.errors %}
+                    {{ field(class="form-control") }}
+                        <span class="invalid feedback">
+                            {% for e in field.errors %}
+                                <p class="redtext">{{ e }}</p>
+                            {% endfor %}
+                        </span>
+                {% elif field == form.manager %}
+                    {% set m = form.manager.process_formdata([def_man]) %}
+                    {{ field(class="form-control selectpicker") }}
+                    <br>
+                {% elif field == form.executors %}
+                    {% set e = form.executors.process_formdata(def_ex) %}
+                    {{ field(class="selectpicker form-control") }}
+                    <br>
+                {% else %}
+                    {{ field(class="form-control") }}
+                    <br>
+                {% endif %}
+            {% endfor %}
+        <br>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+
+<!--    <div class="col-md-8">-->
+<!--        <form action="{{ url_for('projects.project_edit', slug=project.slug) }}" method="POST">-->
+<!--            <div class="form-group">-->
+<!--                {{ form.title.label(class="control-label") }}-->
+<!--                {{ form.title(class="form-control") }}-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                {{ form.executors.label(class="control-label") }}-->
+<!--                {% set e = form.executors.process_formdata(def_ex) %}-->
+<!--                {{ form.executors(class="form-control selectpicker") }}-->
+<!--            </div>-->
+<!--            <div class="form-group">-->
+<!--                {{ form.manager.label(class="control-label") }}-->
+<!--                {% set m = form.manager.process_formdata([def_man]) %}-->
+<!--                {{ form.manager(class="form-control selectpicker") }}-->
+<!--            </div>-->
+
+<!--            <div class="form-group row-20">-->
+<!--                {{ form.describe.label(class="control-label") }}-->
+<!--                {{ form.describe(class="form-control") }}-->
+<!--            </div>-->
+
+<!--            <button type="submit" class="gradient-button">Edit</button>-->
+<!--        </form>-->
+<!--    </div>-->
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% include 'projects/_tinymce.html' %}
+{% endblock %}

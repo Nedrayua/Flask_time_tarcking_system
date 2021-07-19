@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Projects | Task detail
+{% endblock%}
+
+
+{% block linc_navbar %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('projects.project_create') }}">+ New project</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    Task:
+{% endblock %}
+
+{% block content %}
+<label class="control-label col-md-8">Title:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.title }}</div>
+
+<label class="control-label col-md-8">Describe:</label>
+<div class="inline-block col-md-8 col-md-offset-2"><html>{{ task.describe|safe }}</html></div>
+
+<label class="control-label col-md-8">Date of beginning:</label>
+<div class="inline-block col-md-8 col-md-offset-2">
+    {{ task.date_begin.strftime('%d %B %Y') }} | <span class="bluetext"> it took {{ task.take_time() }}</span>
+</div>
+
+<label class="control-label col-md-8">Date of delivery:</label>
+<div class="inline-block col-md-8 col-md-offset-2">
+    {{ task.date_end.strftime('%d %B %Y') }} | <span class="bluetext">{{ task.time_count() }} before delivery</span>
+</div>
+
+<label class="control-label col-md-8">Type of task:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.task_type }}</div>
+
+<label class="control-label col-md-8">Priority of task:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.priority }}</div>
+
+<label class="control-label col-md-8">Status of task:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.status }}</div>
+
+<label class="control-label col-md-8">Num of fours to perform:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.num_of_hours }}</div>
+
+<label class="control-label col-md-8">Manager:</label>
+<div class="inline-block col-md-8 col-md-offset-2">{{ task.manager }}</div>
+
+<label class="control-label col-md-8">Executor(s):</label>
+<div class="inline-block col-md-8 col-md-offset-2">
+    {% for executor in task.executors %}
+        <p><span class="bluetext">{{ executor }}</span></p>
+    {% endfor %}
+</div>
+
+<label class="control-label col-md-8">Comments(s):</label>
+<div class="block col-md-8 col-md-offset-1">
+    {% for comment in task.journal.comments_sorted(reverse=True) %}
+        <span class="blacktext col-md-7">
+            <p>{{ comment.author.name }} {{ comment.author.surname}}
+             | {{ comment.create_at.strftime('%d %B %Y, %H:%M:%S') }}</p>
+            <p>{{ comment.body }}</p>
+        </span>
+    {% endfor %}
+</div>
+<div class="col-md-8">
+    <br>
+    <br>
+</div>
+<div class="col-md-8">
+        <form action="{{ url_for('projects.task_detail', slug=task.slug) }}" method="POST">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.name not in ['csrf_token', 'submit'] -%}
+                <p>{{ field.label() }}:</p>
+                {% if field.errors %}
+                    {{ field(class="form-control") }}
+                        <span class="invalid feedback">
+                            {% for e in field.errors %}
+                                <p class="redtext">{{ e }}</p>
+                            {% endfor %}
+                        </span>
+                {% else %}
+                    {{ field(class="form-control") }}
+                    <br>
+                {% endif %}
+            {% endfor %}
+        <br>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+
+{% endblock %}

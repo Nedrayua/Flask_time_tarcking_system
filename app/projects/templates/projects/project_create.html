@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Create project | Projects
+{% endblock%}
+
+{% block linc_navbar %}
+    <ul class="nav navbar-nav navbar-right">
+        {% if current_user.has_role('admin') %}
+            <li><a href="{{ url_for('projects.project_create') }}">+ New project</a></li>
+        {% endif %}
+    </ul>
+{% endblock %}
+
+<!--Флэш сообщения-->
+{% block under_content %}
+    {% with errors = get_flashed_messages(category_filter=["error"]) %}
+        {% if errors %}
+            <div class="redtext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    {% with errors = get_flashed_messages(category_filter=["confirm"]) %}
+        {% if errors %}
+            <div class="bluetext">
+                <a class="close" href="#">×</a>
+                {% for message in errors %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+{% endblock %}
+
+{% block  content_title %}
+    Create project:
+{% endblock %}
+
+{% block content %}
+    <div class="col-md-8">
+        <form action="{{ url_for('projects.project_create') }}" method="POST">
+            {{ form.hidden_tag() }}
+            {% for field in form if field.name not in ['csrf_token', 'submit', 'manager'] -%}
+                <p>{{ field.label() }}:</p>
+                {% if field.errors %}
+                    {{ field(class="form-control") }}
+                        <span class="invalid feedback">
+                            {% for e in field.errors %}
+                                <p class="redtext">{{ e }}</p>
+                            {% endfor %}
+                        </span>
+                {% elif field == form.manager %}
+                    {{ field(class="form-control selectpicker") }}
+                    <br>
+                {% elif field == form.executors %}
+                    {{ field(class="selectpicker form-control") }}
+                    <br>
+                {% else %}
+                    {{ field(class="form-control") }}
+                    <br>
+                {% endif %}
+            {% endfor %}
+        <br>
+            {{ form.submit(class="btn btn-primary") }}
+        </form>
+    </div>
+
+{% endblock %}
+
+{% block scripts %}
+    {{ super() }}
+    {% include 'projects/_tinymce.html' %}
+{% endblock %}
